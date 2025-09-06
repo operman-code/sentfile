@@ -1,18 +1,23 @@
 import { useState } from 'react';
 
-export function Signup() {
-  const [form, setForm] = useState({ username: '', email: '', password: '' });
+export function Login({ onLogin }) {
+  const [form, setForm] = useState({ username: '', password: '' });
   const [msg, setMsg] = useState('');
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const res = await fetch('/api/auth/signup', {
+    const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form)
     });
     const data = await res.json();
-    setMsg(data.message);
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      onLogin();
+    } else {
+      setMsg(data.message);
+    }
   };
 
   return (
@@ -25,20 +30,13 @@ export function Signup() {
         required
       />
       <input
-        type="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={e => setForm({ ...form, email: e.target.value })}
-        required
-      />
-      <input
         type="password"
         placeholder="Password"
         value={form.password}
         onChange={e => setForm({ ...form, password: e.target.value })}
         required
       />
-      <button type="submit">Sign Up</button>
+      <button type="submit">Log In</button>
       <p>{msg}</p>
     </form>
   );
