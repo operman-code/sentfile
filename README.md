@@ -22,3 +22,23 @@ sentfile/
 │
 ├── README.md                   # Project overview and instructions
 └── .gitignore                  # Git ignore rules
+
+
+
+client/
+├── public/
+│   ├── index.html            # Main HTML file to load React app
+│   └── favicon.ico           # Site icon
+│
+├── src/
+│   ├── components/           # Reusable React components
+│   │   ├── Signup.js         # Signup form component
+│   │   ├── Login.js          # Login form component
+│   │   └── UserSearch.js     # User search component
+│   ├── App.js                # Main React app component and routes
+│   └── index.js              # React DOM rendering entry point
+│
+├── package.json              # React dependencies, scripts for build/dev
+├── .env.example              # Environment variables like API base URL
+└── README.md                 # Frontend-specific instructions (optional)
+
