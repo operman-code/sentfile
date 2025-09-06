@@ -7,7 +7,7 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   return (
-    <div style={{ width: 400, margin: '40px auto', fontFamily: 'Arial, sans-serif' }}>
+    <div style={{ maxWidth: 400, margin: '40px auto', fontFamily: 'Arial, sans-serif' }}>
       {!loggedIn ? (
         <>
           <h2>Login</h2>
@@ -20,6 +20,12 @@ export default function App() {
         <>
           <h2>User Search</h2>
           <UserSearch />
+          <button style={{ marginTop: 20 }} onClick={() => {
+            localStorage.removeItem('token');
+            setLoggedIn(false);
+          }}>
+            Log Out
+          </button>
         </>
       )}
     </div>
