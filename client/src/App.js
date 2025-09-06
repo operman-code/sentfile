@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { Signup } from './components/Signup';
 import { Login } from './components/Login';
-import { UserSearch } from './components/UserSearch';
+import Dashboard from './components/dashboard/Dashboard';
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
+
+  // Logout handler to clear token and state
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setLoggedIn(false);
+  };
 
   return (
-    <div style={{ maxWidth: 400, margin: '40px auto', fontFamily: 'Arial, sans-serif' }}>
+    <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'Arial, sans-serif' }}>
       {!loggedIn ? (
         <>
           <h2>Login</h2>
@@ -18,12 +24,8 @@ export default function App() {
         </>
       ) : (
         <>
-          <h2>User Search</h2>
-          <UserSearch />
-          <button style={{ marginTop: 20 }} onClick={() => {
-            localStorage.removeItem('token');
-            setLoggedIn(false);
-          }}>
+          <Dashboard />
+          <button style={{ marginTop: 20 }} onClick={handleLogout}>
             Log Out
           </button>
         </>
