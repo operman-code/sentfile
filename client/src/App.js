@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Signup } from './components/Signup';
 import { Login } from './components/Login';
 import Dashboard from './components/dashboard/Dashboard';
+import InfoPanel from './components/InfoPanel';
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -13,47 +14,35 @@ export default function App() {
       setLoading(false);
       return;
     }
-    // Call backend to verify token or get profile
+    // Example token validation logic (replace with actual)
     fetch('/api/auth/profile', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
-        if (res.ok) {
-          setLoggedIn(true);
-        } else {
-          localStorage.removeItem('token');
-          setLoggedIn(false);
-        }
+        if (res.ok) setLoggedIn(true);
+        else localStorage.removeItem('token');
       })
-      .catch(() => {
-        localStorage.removeItem('token');
-        setLoggedIn(false);
-      })
+      .catch(() => localStorage.removeItem('token'))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>Loading...</div>;
 
   return (
-    <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'Arial, sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
       {!loggedIn ? (
         <>
-          <h2>Login</h2>
-          <Login onLogin={() => setLoggedIn(true)} />
-          <hr />
-          <h2>Sign Up</h2>
-          <Signup />
+          <div style={{ flex: 1, maxWidth: 480, padding: 40, backgroundColor: '#fff' }}>
+            <h2>Login</h2>
+            <Login onLogin={() => setLoggedIn(true)} />
+            <hr style={{ margin: '20px 0' }} />
+            <h2>Sign Up</h2>
+            <Signup />
+          </div>
+          <InfoPanel style={{ flex: 1 }} />
         </>
       ) : (
-        <>
-          <Dashboard />
-          <button style={{ marginTop: 20 }} onClick={() => {
-            localStorage.removeItem('token');
-            setLoggedIn(false);
-          }}>
-            Log Out
-          </button>
-        </>
+        <Dashboard />
       )}
     </div>
   );
