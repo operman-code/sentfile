@@ -1,33 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Signup } from './components/Signup';
 import { Login } from './components/Login';
 import Dashboard from './components/dashboard/Dashboard';
-import InfoPanel from './components/InfoPanel';
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    // Call backend to verify token or get profile
+    fetch('/api/auth/profile', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => {
+        if (res.ok) {
+          setLoggedIn(true);
+        } else {
+          localStorage.removeItem('token');
+          setLoggedIn(false);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        setLoggedIn(false);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>Loading...</div>;
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      background: 'linear-gradient(90deg,#f8fafd 50%,#0057b9 100%)'
-    }}>
+    <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'Arial, sans-serif' }}>
       {!loggedIn ? (
         <>
-          <div style={{
-            flex: 1, maxWidth: 480, padding: 40, background: '#fff', zIndex: 1, boxShadow: '0 4px 24px rgba(0,0,0,0.04)'
-          }}>
-            <h2>Sign in to Sentfile</h2>
-            <Login onLogin={() => setLoggedIn(true)} />
-            <hr style={{ margin: '32px 0' }}/>
-            <Signup />
-          </div>
-          <InfoPanel />
+          <h2>Login</h2>
+          <Login onLogin={() => setLoggedIn(true)} />
+          <hr />
+          <h2>Sign Up</h2>
+          <Signup />
         </>
       ) : (
-        <Dashboard />
+        <>
+          <Dashboard />
+          <button style={{ marginTop: 20 }} onClick={() => {
+            localStorage.removeItem('token');
+            setLoggedIn(false);
+          }}>
+            Log Out
+          </button>
+        </>
       )}
     </div>
   );
