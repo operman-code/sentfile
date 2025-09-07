@@ -5,29 +5,29 @@ export default function UserSearch({ selectedUsers, setSelectedUsers }) {
   const [results, setResults] = useState([]);
 
   useEffect(() => {
-    if (query.length === 0) {
+    if (!query) {
       setResults([]);
       return;
     }
-    const timeoutId = setTimeout(async () => {
+    const delayDebounce = setTimeout(async () => {
       try {
         const res = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         if (res.ok) {
-          const data = await res.json();
-          setResults(data.users);
+          const { users } = await res.json();
+          setResults(users);
         }
       } catch (e) {
         console.error(e);
       }
-    }, 300);
+    }, 400);
 
-    return () => clearTimeout(timeoutId);
+    return () => clearTimeout(delayDebounce);
   }, [query]);
 
-  const toggleUser = user => {
-    if (selectedUsers.find(u => u.id === user.id)) {
+  const toggleUser = (user) => {
+    if (selectedUsers.some(u => u.id === user.id)) {
       setSelectedUsers(selectedUsers.filter(u => u.id !== user.id));
     } else {
       setSelectedUsers([...selectedUsers, user]);
@@ -38,27 +38,51 @@ export default function UserSearch({ selectedUsers, setSelectedUsers }) {
     <div>
       <input
         type="text"
-        placeholder="Search users..."
+        placeholder="Search users by name or email..."
         value={query}
         onChange={e => setQuery(e.target.value)}
-        style={{ width: '100%', marginBottom: 10, padding: 8 }}
+        style={{
+          width: '100%',
+          padding: 12,
+          marginBottom: 15,
+          fontSize: 16,
+          borderRadius: 6,
+          border: '1px solid #ccc',
+          outline: 'none',
+          boxSizing: 'border-box'
+        }}
       />
-      <ul style={{ listStyle: 'none', padding: 0, maxHeight: 200, overflowY: 'auto' }}>
-        {results.map(user => (
-          <li
-            key={user.id}
-            onClick={() => toggleUser(user)}
-            style={{
-              padding: 8,
-              marginBottom: 4,
-              backgroundColor: selectedUsers.find(u => u.id === user.id) ? '#cce5ff' : '#f8f9fa',
-              cursor: 'pointer',
-              borderRadius: 4,
-            }}
-          >
-            {user.username} ({user.email})
-          </li>
-        ))}
+      <ul style={{
+        maxHeight: 300,
+        overflowY: 'auto',
+        padding: 0,
+        listStyleType: 'none',
+        margin: 0,
+        borderRadius: 6,
+        border: '1px solid #ccc',
+        backgroundColor: '#fafafa'
+      }}>
+        {results.length === 0 ? (
+          <li style={{ padding: 12, color: '#666', textAlign: 'center' }}>No users found</li>
+        ) : (
+          results.map(user => (
+            <li
+              key={user.id}
+              onClick={() => toggleUser(user)}
+              style={{
+                padding: 12,
+                cursor: 'pointer',
+                backgroundColor: selectedUsers.some(u => u.id === user.id) ? '#0078d4' : '',
+                color: selectedUsers.some(u => u.id === user.id) ? '#fff' : '#333',
+                borderBottom: '1px solid #eee',
+                userSelect: 'none',
+                transition: 'background-color 0.3s ease'
+              }}
+            >
+              <strong>{user.username}</strong> &nbsp; <small>({user.email})</small>
+            </li>
+          ))
+        )}
       </ul>
     </div>
   );
