@@ -9,19 +9,39 @@ export default function Dashboard() {
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   return (
-    <div style={{ maxWidth: 800, margin: '20px auto', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Sentfile Dashboard</h1>
-      <nav style={{ marginBottom: 20 }}>
-        <button onClick={() => setTab('search')} disabled={tab === 'search'}>User Search</button>
-        <button onClick={() => setTab('upload')} disabled={tab === 'upload'}>Send File</button>
-        <button onClick={() => setTab('sent')} disabled={tab === 'sent'}>Sent Files</button>
-        <button onClick={() => setTab('received')} disabled={tab === 'received'}>Received Files</button>
+    <div style={{
+      maxWidth: 900, margin: '30px auto', fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      padding: 20, background: '#fff', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+    }}>
+      <h1 style={{ textAlign: 'center', marginBottom: 30, color: '#0078d4' }}>Sentfile Dashboard</h1>
+
+      <nav style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 30 }}>
+        {['search', 'upload', 'sent', 'received'].map(value => (
+          <button
+            key={value}
+            onClick={() => setTab(value)}
+            style={{
+              padding: '10px 25px',
+              fontWeight: tab === value ? '700' : '500',
+              backgroundColor: tab === value ? '#0078d4' : '#e2e8f0',
+              color: tab === value ? '#fff' : '#333',
+              borderRadius: 6,
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {value.charAt(0).toUpperCase() + value.slice(1)} Files
+          </button>
+        ))}
       </nav>
 
-      {tab === 'search' && <UserSearch selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers} />}
-      {tab === 'upload' && <FileUpload selectedUsers={selectedUsers} />}
-      {tab === 'sent' && <SentFiles />}
-      {tab === 'received' && <ReceivedFiles />}
+      <div>
+        {tab === 'search' && <UserSearch selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers} />}
+        {tab === 'upload' && <FileUpload selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers} />}
+        {tab === 'sent' && <SentFiles />}
+        {tab === 'received' && <ReceivedFiles />}
+      </div>
     </div>
   );
 }
